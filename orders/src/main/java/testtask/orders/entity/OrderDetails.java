@@ -9,7 +9,6 @@ import org.springframework.data.annotation.Id;
 
 import java.util.Objects;
 
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -23,7 +22,7 @@ public class OrderDetails {
     private String productName;
     private Long productQuantity;
     private Long productPrice;
-    private Long orderId;
+    private Order order;
 
     @Override
     public boolean equals(Object o) {
@@ -34,7 +33,7 @@ public class OrderDetails {
                 && Objects.equals(productName, that.productName)
                 && Objects.equals(productQuantity, that.productQuantity)
                 && Objects.equals(productPrice, that.productPrice)
-                && Objects.equals(orderId, that.orderId);
+                && Objects.equals(order, that.order);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class OrderDetails {
                 productName,
                 productQuantity,
                 productPrice,
-                orderId
+                order
         );
     }
 }
