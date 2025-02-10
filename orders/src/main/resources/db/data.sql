@@ -1,6 +1,6 @@
 INSERT INTO orders (OrderNumber, TotalAmount, OrderDate, Recipient, DeliveryAddress, PaymentType, DeliveryType)
 VALUES ('ORDER-001',
-         (Select quantity * unitprice sum FROM orderdetails WHERE orderid = orders.id),
+         1000.00,
         CURRENT_TIMESTAMP,
         'Иванов Иван',
         'ул. Ленина, 1',
