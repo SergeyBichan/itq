@@ -4,7 +4,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import testtask.orders.entity.Order;
 
+import java.util.Optional;
+
+
 @Repository
 public interface OrderRepository extends CrudRepository<Order, Long> {
-     Order save(Order order);
+    <S extends Order> S save(Order order);
+    Optional<Order> findOrderById(Long id);
+
 }
