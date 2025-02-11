@@ -1,4 +1,4 @@
-INSERT INTO orders (OrderNumber, TotalAmount, OrderDate, Recipient, DeliveryAddress, PaymentType, DeliveryType)
+INSERT INTO orders (order_number, total_amount, order_date, order_consumer, delivery_address, payment_method, delivery_method)
 VALUES ('ORDER-001',
          1000.00,
         CURRENT_TIMESTAMP,
@@ -7,7 +7,7 @@ VALUES ('ORDER-001',
         'card',
         'door_delivery');
 
-INSERT INTO orderdetails (productarticle, productname, quantity, unitprice, orderid)
+INSERT INTO orderdetails (product_article, product_name, product_quantity, product_price, order_id)
 VALUES (
         1,
         'product',
@@ -15,7 +15,7 @@ VALUES (
         1000.00,
         1
        );
-INSERT INTO orderdetails (productarticle, productname, quantity, unitprice, orderid)
+INSERT INTO orderdetails (product_article, product_name, product_quantity, product_price, order_id)
 VALUES (
            2,
            'product2',
