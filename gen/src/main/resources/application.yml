@@ -3,6 +3,5 @@ server:
 spring:
   application:
     name: gen
-  data:
   datasource:
     url: mongodb://localhost:27017/generated_numbers_db
