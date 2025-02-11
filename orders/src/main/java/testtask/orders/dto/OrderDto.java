@@ -1,6 +1,7 @@
 package testtask.orders.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -16,13 +17,21 @@ public class OrderDto {
 
     @JsonIgnore
     private Long id;
+    @JsonProperty
     private String orderNumber;
+    @JsonProperty
     private BigDecimal totalOrderPrice;
+    @JsonProperty
     private LocalDate orderDate;
+    @JsonProperty(required = true)
     private String orderConsumer;
+    @JsonProperty(required = true)
     private String deliveryAddress;
+    @JsonProperty(required = true)
     private String paymentMethod;
+    @JsonProperty(required = true)
     private String deliveryMethod;
+    @JsonProperty(required = true)
     private List<OrderDetailsDto> orderDetails;
 
 }

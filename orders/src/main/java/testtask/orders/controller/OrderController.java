@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import testtask.orders.dto.OrderDto;
-import testtask.orders.entity.Order;
+import testtask.orders.dto.OrderWithoutDetailsDto;
 import testtask.orders.service.OrderService;
 
 import java.util.List;
@@ -27,7 +27,9 @@ public class OrderController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Order>> getAllOrders() {
+    public ResponseEntity<List<OrderWithoutDetailsDto>> getAllOrders() {
         return ResponseEntity.ok(orderService.findAll());
     }
+
+
 }

@@ -5,21 +5,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 import testtask.orders.dto.OrderDetailsDto;
 import testtask.orders.dto.OrderDto;
+import testtask.orders.dto.OrderWithoutDetailsDto;
 import testtask.orders.dto.mapper.OrderMapper;
 import testtask.orders.entity.Order;
 import testtask.orders.repository.OrderRepository;
 
 import java.util.List;
 
+import static testtask.orders.constants.Constants.URI_FOR_GENERATE_NUMBER;
+
 @Service
 @RequiredArgsConstructor
-
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderDetailsService orderDetailsService;
+    private final RestTemplate restTemplate;
 
     private final OrderMapper orderMapper;
 
@@ -27,17 +31,26 @@ public class OrderService {
         List<OrderDetailsDto> orderDetailsDtoList = orderDetailsService.getAllOrderDetailsByOrderId(id);
 
         return orderRepository.findOrderById(id)
-                .map(order -> orderMapper.toTDto(order, orderDetailsDtoList))
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .map(order -> orderMapper.toTDtoWithDetails(order, orderDetailsDtoList))
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND,
+                        "Order with id: " + id + " not found"));
     }
 
-    public List<Order> findAll() {
+    public List<OrderWithoutDetailsDto> findAll() {
         List<Order> all = orderRepository.findAll();
-        System.out.println(all);
-        return all;
+        if (all.isEmpty()) {
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No orders found");
+        }
+
+        return all.stream()
+                .map(orderMapper::toTDtoWithoutDetails)
+                .toList();
     }
 
-    public ResponseEntity<OrderDto> saveOrder(OrderDto orderDto) {
-        return null;
-    }
+//TODO
+//    public ResponseEntity<OrderDto> saveOrder(OrderDto orderDto) {
+//            String generatedOrderNumber = restTemplate.getForObject(URI_FOR_GENERATE_NUMBER, String.class);
+//        return null;
+//    }
+
 }
