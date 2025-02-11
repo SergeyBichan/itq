@@ -2,7 +2,6 @@ package testtask.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -14,8 +13,6 @@ import testtask.orders.entity.Order;
 import testtask.orders.repository.OrderRepository;
 
 import java.util.List;
-
-import static testtask.orders.constants.Constants.URI_FOR_GENERATE_NUMBER;
 
 @Service
 @RequiredArgsConstructor
