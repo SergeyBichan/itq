@@ -1,18 +1,33 @@
 package testtask.orders.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import testtask.orders.dto.OrderDto;
+import testtask.orders.entity.Order;
+import testtask.orders.service.OrderService;
 
+import java.util.List;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("api/v1/orders")
 public class OrderController {
 
-    @GetMapping("/create-order")
+    private final OrderService orderService;
+
+    @PostMapping("/create-order")
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderDto orderDto) {
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDto> getOrderById(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.findOrderById(id));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Order>> getAllOrders() {
+        return ResponseEntity.ok(orderService.findAll());
     }
 }

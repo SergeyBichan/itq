@@ -1,15 +1,13 @@
 package testtask.orders.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class OrderDetailsDto {
 
     @JsonIgnore
@@ -18,6 +16,5 @@ public class OrderDetailsDto {
     private String productName;
     private Long productQuantity;
     private Long productPrice;
-    private OrderDto order;
 
 }

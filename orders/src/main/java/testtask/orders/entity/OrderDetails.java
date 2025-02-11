@@ -1,50 +1,29 @@
 package testtask.orders.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Builder;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 
-import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
+@EqualsAndHashCode
+@ToString
 public class OrderDetails {
 
     @Id
     private Long id;
-    private Long productArticle;
-    private String productName;
-    private Long productQuantity;
-    private Long productPrice;
-    private Order order;
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        OrderDetails that = (OrderDetails) o;
-        return Objects.equals(id, that.id)
-                && Objects.equals(productArticle, that.productArticle)
-                && Objects.equals(productName, that.productName)
-                && Objects.equals(productQuantity, that.productQuantity)
-                && Objects.equals(productPrice, that.productPrice)
-                && Objects.equals(order, that.order);
-    }
+    private Long product_article;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                id,
-                productArticle,
-                productName,
-                productQuantity,
-                productPrice,
-                order
-        );
-    }
+    private String product_name;
+
+    private Long product_quantity;
+
+    private Long product_price;
+
+    private Order order_id;
+
 }
