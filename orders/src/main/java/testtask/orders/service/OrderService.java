@@ -1,10 +1,13 @@
 package testtask.orders.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import testtask.orders.dto.OrderDetailsDto;
 import testtask.orders.dto.OrderDto;
+import testtask.orders.dto.mapper.OrderMapper;
 import testtask.orders.entity.Order;
 import testtask.orders.repository.OrderRepository;
 
@@ -18,22 +21,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderDetailsService orderDetailsService;
 
+    private final OrderMapper orderMapper;
+
     public OrderDto findOrderById(Long id) {
-        List<OrderDetailsDto> orderDetailsDto = orderDetailsService.getAllOrderDetailsByOrderId(id);
+        List<OrderDetailsDto> orderDetailsDtoList = orderDetailsService.getAllOrderDetailsByOrderId(id);
 
         return orderRepository.findOrderById(id)
-                .map(order -> OrderDto.builder()
-                        .id(order.getId())
-                        .orderNumber(order.getOrder_number())
-                        .totalOrderPrice(order.getTotal_amount())
-                        .orderDate(order.getOrder_date())
-                        .orderConsumer(order.getOrder_consumer())
-                        .deliveryAddress(order.getDelivery_address())
-                        .paymentMethod(order.getPayment_method())
-                        .deliveryMethod(order.getDelivery_method())
-                        .orderDetails(orderDetailsDto)
-                        .build())
-                .orElse(null);
+                .map(order -> orderMapper.toTDto(order, orderDetailsDtoList))
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
     }
 
     public List<Order> findAll() {
