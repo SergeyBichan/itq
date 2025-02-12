@@ -18,13 +18,13 @@ public class OrderMapper {
     public OrderDto toTDtoWithDetails(Order order, List<OrderDetailsDto> orderDetailsDtos) {
         return order == null ? new OrderDto() : OrderDto.builder()
                 .id(order.getId())
-                .orderNumber(order.getOrder_number())
-                .totalOrderPrice(order.getTotal_amount())
-                .orderDate(order.getOrder_date())
-                .orderConsumer(order.getOrder_consumer())
-                .deliveryAddress(order.getDelivery_address())
-                .paymentMethod(order.getPayment_method())
-                .deliveryMethod(order.getDelivery_method())
+                .orderNumber(order.getOrderNumber())
+                .totalOrderPrice(order.getTotalAmount())
+                .orderDate(order.getOrderDate())
+                .orderConsumer(order.getOrderConsumer())
+                .deliveryAddress(order.getDeliveryAddress())
+                .paymentMethod(order.getPaymentMethod())
+                .deliveryMethod(order.getDeliveryMethod())
                 .orderDetails(orderDetailsDtos)
                 .build();
     }
@@ -32,20 +32,25 @@ public class OrderMapper {
     public OrderWithoutDetailsDto toTDtoWithoutDetails(Order order) {
         return order == null ? new OrderWithoutDetailsDto() : OrderWithoutDetailsDto.builder()
                 .id(order.getId())
-                .orderNumber(order.getOrder_number())
-                .totalOrderPrice(order.getTotal_amount())
-                .orderDate(order.getOrder_date())
-                .orderConsumer(order.getOrder_consumer())
-                .deliveryAddress(order.getDelivery_address())
-                .paymentMethod(order.getPayment_method())
-                .deliveryMethod(order.getDelivery_method())
+                .orderNumber(order.getOrderNumber())
+                .totalOrderPrice(order.getTotalAmount())
+                .orderDate(order.getOrderDate())
+                .orderConsumer(order.getOrderConsumer())
+                .deliveryAddress(order.getDeliveryAddress())
+                .paymentMethod(order.getPaymentMethod())
+                .deliveryMethod(order.getDeliveryMethod())
                 .build();
     }
-//TODO
-//    public Order toTEntity(OrderDto orderDto, String generatedOrderNumber){
-//        return orderDto == null ? new Order() : Order.builder()
-//                .order_number(generatedOrderNumber)
-//                .total_amount(orderDto.getTotalOrderPrice())
-//                .order_date()
-//    }
+
+    public Order toEntity(OrderDto orderDto) {
+        return orderDto == null ? new Order() : Order.builder()
+                .orderNumber(orderDto.getOrderNumber())
+                .totalAmount(orderDto.getTotalOrderPrice())
+                .orderDate(orderDto.getOrderDate())
+                .orderConsumer(orderDto.getOrderConsumer())
+                .deliveryAddress(orderDto.getDeliveryAddress())
+                .paymentMethod(orderDto.getPaymentMethod())
+                .deliveryMethod(orderDto.getDeliveryMethod())
+                .build();
+    }
 }

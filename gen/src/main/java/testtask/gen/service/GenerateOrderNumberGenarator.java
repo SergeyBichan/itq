@@ -9,8 +9,6 @@ import testtask.gen.repository.OrderNumberRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static testtask.gen.constants.ConstantUtil.DATE_FORMATTER;
@@ -44,7 +42,6 @@ public class GenerateOrderNumberGenarator {
             }
             String result = number + date;
             if (orderNumberRepository.findGeneratedOrderNumberByOrderNumber(result).isEmpty()) {
-
                 return result;
             }
         } while (true);

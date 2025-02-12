@@ -1,53 +1,101 @@
 package testtask.orders.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import testtask.orders.dto.OrderDetailsDto;
+import testtask.orders.constants.Constants;
 import testtask.orders.dto.OrderDto;
-import testtask.orders.dto.OrderWithoutDetailsDto;
+import testtask.orders.dto.OrderDtoForCreateOrder;
 import testtask.orders.dto.mapper.OrderMapper;
 import testtask.orders.entity.Order;
-import testtask.orders.repository.OrderRepository;
+import testtask.orders.entity.OrderDetails;
+import testtask.orders.repository.impl.OrderDetailsRepository;
+import testtask.orders.repository.impl.OrderRepository;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static testtask.orders.constants.Constants.URI_FOR_GENERATE_NUMBER;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderDetailsService orderDetailsService;
+    private final OrderDetailsRepository orderDetailsRepository;
     private final RestTemplate restTemplate;
-
     private final OrderMapper orderMapper;
 
-    public OrderDto findOrderById(Long id) {
-        List<OrderDetailsDto> orderDetailsDtoList = orderDetailsService.getAllOrderDetailsByOrderId(id);
 
-        return orderRepository.findOrderById(id)
-                .map(order -> orderMapper.toTDtoWithDetails(order, orderDetailsDtoList))
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND,
-                        "Order with id: " + id + " not found"));
+    public void createOrder(OrderDtoForCreateOrder orderDtoForCreateOrder) {
+
+        String generatedOrderNumber = restTemplate.getForObject(URI_FOR_GENERATE_NUMBER, String.class);
+        String dateNow = generatedOrderNumber.substring(5);
+        LocalDate date = LocalDate.parse(dateNow, DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        Order order = Order.builder()
+                .orderNumber(generatedOrderNumber)
+                .totalAmount(getReduce(orderDtoForCreateOrder))
+                .orderDate(date)
+                .orderConsumer(orderDtoForCreateOrder.getOrderConsumer())
+                .deliveryAddress(orderDtoForCreateOrder.getDeliveryAddress())
+                .paymentMethod(orderDtoForCreateOrder.getPaymentMethod())
+                .deliveryMethod(orderDtoForCreateOrder.getDeliveryMethod())
+                .build();
+
+        orderRepository.save(order);
+
+        Order byOrderNumberFromDb = orderRepository.findByOrderNumber(generatedOrderNumber);
+
+        orderDtoForCreateOrder.getOrderDetails().forEach(od -> {
+            OrderDetails orderDetails = OrderDetails.builder()
+                    .productArticle(od.getProductArticle())
+                    .productName(od.getProductName())
+                    .productQuantity(od.getProductQuantity())
+                    .productPrice(od.getProductPrice())
+                    .orderId(byOrderNumberFromDb)
+                    .build();
+            orderDetailsRepository.save(orderDetails);
+        });
     }
 
-    public List<OrderWithoutDetailsDto> findAll() {
-        List<Order> all = orderRepository.findAll();
-        if (all.isEmpty()) {
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "No orders found");
-        }
-
-        return all.stream()
-                .map(orderMapper::toTDtoWithoutDetails)
-                .toList();
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id);
     }
 
-//TODO
-//    public ResponseEntity<OrderDto> saveOrder(OrderDto orderDto) {
-//            String generatedOrderNumber = restTemplate.getForObject(URI_FOR_GENERATE_NUMBER, String.class);
-//        return null;
-//    }
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
 
+    public void deleteOrder(Long id) {
+        orderRepository.deleteById(id);
+    }
+
+    public void createOrderDetails(OrderDetails orderDetails) {
+        orderDetailsRepository.save(orderDetails);
+    }
+
+    public OrderDetails getOrderDetailsById(Long id) {
+        return orderDetailsRepository.findById(id);
+    }
+
+    public List<OrderDetails> getAllOrderDetails() {
+        return orderDetailsRepository.findAll();
+    }
+
+    public void deleteOrderDetails(Long id) {
+        orderDetailsRepository.deleteById(id);
+    }
+
+    private static BigDecimal getReduce(OrderDtoForCreateOrder orderDtoForCreateOrder) {
+        return orderDtoForCreateOrder.getOrderDetails().stream()
+                .map(detail ->
+                        BigDecimal.valueOf(detail.getProductPrice())
+                                .multiply(BigDecimal.valueOf(detail.getProductQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

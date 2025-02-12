@@ -2,6 +2,7 @@ package testtask.orders.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -13,11 +14,11 @@ import java.util.List;
 @Setter
 @Getter
 @Builder
+@JsonPropertyOrder
 public class OrderDto {
 
     @JsonIgnore
     private Long id;
-    @JsonProperty
     private String orderNumber;
     @JsonProperty
     private BigDecimal totalOrderPrice;
