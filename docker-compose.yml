@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  order_db:
+    image: postgres:latest
+    container_name: order_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orders_db
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  gen_db:
+    image: mongo:latest
+    container_name: gen_db
+    environment:
+      MONGO_INITDB_DATABASE: generated_numbers_db
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+
+  gen:
+    build:
+      context: ./gen
+      dockerfile: Dockerfile
+    container_name: gen
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://gen_db:27017/generated_numbers_db
+    ports:
+      - "8081:8081"
+    depends_on:
+      - gen_db
+    networks:
+      - app-network
+
+  orders:
+    build:
+      context: ./orders
+      dockerfile: Dockerfile
+    container_name: orders
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://order_db:5432/orders_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      GEN_SERVICE_URL: http://gen:8081
+    ports:
+      - "8080:8080"
+    depends_on:
+      - order_db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
