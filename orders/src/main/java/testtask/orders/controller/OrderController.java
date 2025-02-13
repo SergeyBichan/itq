@@ -1,11 +1,9 @@
 package testtask.orders.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -54,9 +52,8 @@ public class OrderController {
             @ApiResponse(responseCode = "404")
     })
     @PostMapping("/create")
-    public ResponseEntity<?> createOrder(@RequestBody OrderDtoForCreateOrder orderDto) {
-        orderService.createOrder(orderDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<String> createOrder(@RequestBody OrderDtoForCreateOrder orderDto) {
+        return new ResponseEntity<>(orderService.createOrder(orderDto), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Delete order by id", description = "Delete order")

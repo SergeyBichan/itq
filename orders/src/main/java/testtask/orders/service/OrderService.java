@@ -36,6 +36,9 @@ public class OrderService {
 
     public String createOrder(OrderDtoForCreateOrder orderDtoForCreateOrder) {
         String generatedOrderNumber = restTemplate.getForObject(URI_FOR_GENERATE_NUMBER, String.class);
+        if (generatedOrderNumber == null) {
+            throw new RuntimeException("Generate order number failed");
+        }
         String dateNow = generatedOrderNumber.substring(5);
         LocalDate date = LocalDate.parse(dateNow, DateTimeFormatter.ofPattern("yyyyMMdd"));
 
@@ -148,10 +151,6 @@ public class OrderService {
         }
         orderDetailsRepository.deleteAllByOrderId(id);
         orderRepository.deleteById(id);
-    }
-
-    public void updateOrder(OrderDtoForCreateOrder orderNumber) {
-
     }
 
     private static BigDecimal getReduce(OrderDtoForCreateOrder orderDtoForCreateOrder) {
