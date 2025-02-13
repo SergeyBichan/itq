@@ -34,8 +34,7 @@ public class OrderService {
     private final OrderDetailsMapper orderDetailsMapper;
 
 
-    public void createOrder(OrderDtoForCreateOrder orderDtoForCreateOrder) {
-
+    public String createOrder(OrderDtoForCreateOrder orderDtoForCreateOrder) {
         String generatedOrderNumber = restTemplate.getForObject(URI_FOR_GENERATE_NUMBER, String.class);
         String dateNow = generatedOrderNumber.substring(5);
         LocalDate date = LocalDate.parse(dateNow, DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -64,6 +63,8 @@ public class OrderService {
                     .build();
             orderDetailsRepository.save(orderDetails);
         });
+
+        return "Order " + generatedOrderNumber + " created successfully";
     }
 
     public OrderDto getOrderById(Long id) {
