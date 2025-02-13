@@ -4,18 +4,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import testtask.orders.constants.Constants;
+import testtask.orders.dto.OrderDetailsDto;
 import testtask.orders.dto.OrderDto;
 import testtask.orders.dto.OrderDtoForCreateOrder;
+import testtask.orders.dto.mapper.OrderDetailsMapper;
 import testtask.orders.dto.mapper.OrderMapper;
 import testtask.orders.entity.Order;
 import testtask.orders.entity.OrderDetails;
-import testtask.orders.repository.impl.OrderDetailsRepository;
-import testtask.orders.repository.impl.OrderRepository;
+import testtask.orders.repository.OrderDetailsRepository;
+import testtask.orders.repository.OrderRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import static testtask.orders.constants.Constants.URI_FOR_GENERATE_NUMBER;
@@ -29,6 +31,7 @@ public class OrderService {
     private final OrderDetailsRepository orderDetailsRepository;
     private final RestTemplate restTemplate;
     private final OrderMapper orderMapper;
+    private final OrderDetailsMapper orderDetailsMapper;
 
 
     public void createOrder(OrderDtoForCreateOrder orderDtoForCreateOrder) {
@@ -63,32 +66,57 @@ public class OrderService {
         });
     }
 
-    public Order getOrderById(Long id) {
-        return orderRepository.findById(id);
+    public OrderDto getOrderById(Long id) {
+        if (id <= 0) {
+            throw new RuntimeException("Order id must be greater than 0");
+        }
+        Order orderFromDb = orderRepository.findById(id);
+
+        List<OrderDetails> allByOrderId = orderDetailsRepository.findAllByOrderId(orderFromDb.getId());
+
+        List<OrderDetailsDto> orderDetailsDtoList = allByOrderId.stream()
+                .map(orderDetailsMapper::toOrderDetailsDto)
+                .toList();
+
+        OrderDto orderDto = orderMapper.toTDtoWithDetails(orderFromDb, orderDetailsDtoList);
+
+
+        return orderDto;
     }
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
+    public List<OrderDto> getAllOrdersByDateAndMoreThanTotalAmount(LocalDate date, BigDecimal amount) {
+        if (date == null || amount == null) {
+            throw new RuntimeException("Date and amount must be greater than 0");
+        }
+
+        String localDate = String.valueOf(date);
+
+        List<Order> ordersByDateAndMoreThanTotalAmount = orderRepository
+                .findOrdersByDateAndMoreThanTotalAmount(localDate, amount);
+        List<OrderDetails> orderDetailsList = new ArrayList<>();
+
+        ordersByDateAndMoreThanTotalAmount.forEach(order -> {
+            orderDetailsList.addAll(orderDetailsRepository.findAllByOrderId(order.getId()));
+        });
+
+        List<OrderDetailsDto> orderDetailsDtoList = orderDetailsList.stream()
+                .map(orderDetailsMapper::toOrderDetailsDto)
+                .toList();
+
+        return ordersByDateAndMoreThanTotalAmount.stream()
+                .map(el -> orderMapper.toTDtoWithDetails(el, orderDetailsDtoList))
+                .toList();
+    }
+
     public void deleteOrder(Long id) {
+        if (id == null) {
+            throw new RuntimeException("id is null");
+        }
         orderRepository.deleteById(id);
-    }
-
-    public void createOrderDetails(OrderDetails orderDetails) {
-        orderDetailsRepository.save(orderDetails);
-    }
-
-    public OrderDetails getOrderDetailsById(Long id) {
-        return orderDetailsRepository.findById(id);
-    }
-
-    public List<OrderDetails> getAllOrderDetails() {
-        return orderDetailsRepository.findAll();
-    }
-
-    public void deleteOrderDetails(Long id) {
-        orderDetailsRepository.deleteById(id);
     }
 
     private static BigDecimal getReduce(OrderDtoForCreateOrder orderDtoForCreateOrder) {
