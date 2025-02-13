@@ -6,14 +6,12 @@ import testtask.orders.dto.OrderDetailsDto;
 import testtask.orders.dto.OrderDto;
 import testtask.orders.dto.OrderWithoutDetailsDto;
 import testtask.orders.entity.Order;
-import testtask.orders.service.OrderDetailsService;
 
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class OrderMapper {
-    private final OrderDetailsService orderDetailsService;
 
     public OrderDto toTDtoWithDetails(Order order, List<OrderDetailsDto> orderDetailsDtos) {
         return order == null ? new OrderDto() : OrderDto.builder()
