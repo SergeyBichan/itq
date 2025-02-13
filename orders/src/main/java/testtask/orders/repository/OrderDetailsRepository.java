@@ -1,4 +1,4 @@
-package testtask.orders.repository.impl;
+package testtask.orders.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,9 +28,14 @@ public class OrderDetailsRepository {
                 orderDetails.getProductQuantity(), orderDetails.getProductPrice(), orderDetails.getOrderId().getId());
     }
 
-    public OrderDetails findById(Long id) {
+    public OrderDetails findByOrderId(Long id) {
         String sql = "SELECT * FROM orderdetails WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, new OrderDetailsRowMapper());
+        return jdbcTemplate.queryForObject(sql, new OrderDetailsRowMapper(), id);
+    }
+
+    public List<OrderDetails> findAllByOrderId(Long id) {
+        String sql = "SELECT * FROM orderdetails WHERE order_id = ?";
+        return jdbcTemplate.query(sql, new OrderDetailsRowMapper(), id);
     }
 
     public List<OrderDetails> findAll() {
