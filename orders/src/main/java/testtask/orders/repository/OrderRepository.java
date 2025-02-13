@@ -1,4 +1,4 @@
-package testtask.orders.repository.impl;
+package testtask.orders.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import testtask.orders.entity.Order;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -44,6 +45,11 @@ public class OrderRepository {
     public Order findByOrderNumber(String orderNumber) {
         String sql = "SELECT * FROM orders WHERE order_number = ?";
         return jdbcTemplate.queryForObject(sql, new OrderRowMapper(), orderNumber);
+    }
+
+    public List<Order> findOrdersByDateAndMoreThanTotalAmount(String date, BigDecimal amount) {
+        String sql = "SELECT * FROM orders WHERE order_date::date = TO_DATE(?, 'YYYY-MM-DD') AND total_amount > ?";
+        return jdbcTemplate.query(sql, new OrderRowMapper(), date, amount);
     }
 
     public List<Order> findAll() {
