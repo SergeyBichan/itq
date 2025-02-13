@@ -20,7 +20,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@Tag(name = "Order Managment", description = "API for managing orders")
+@Tag(name = "Order Management", description = "API for managing orders")
 @RequestMapping("api/v1/orders")
 public class OrderController {
 
