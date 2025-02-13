@@ -67,9 +67,6 @@ public class OrderService {
     }
 
     public OrderDto getOrderById(Long id) {
-        if (id <= 0) {
-            throw new RuntimeException("Order id must be greater than 0");
-        }
         Order orderFromDb = orderRepository.findById(id);
 
         List<OrderDetails> allByOrderId = orderDetailsRepository.findAllByOrderId(orderFromDb.getId());
@@ -78,17 +75,14 @@ public class OrderService {
                 .map(orderDetailsMapper::toOrderDetailsDto)
                 .toList();
 
-        OrderDto orderDto = orderMapper.toTDtoWithDetails(orderFromDb, orderDetailsDtoList);
-
-
-        return orderDto;
+        return orderMapper.toTDtoWithDetails(orderFromDb, orderDetailsDtoList);
     }
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
 
-    public List<OrderDto> getAllOrdersByDateAndMoreThanTotalAmount(LocalDate date, BigDecimal amount) {
+    public List<OrderDto> getOrdersByDateAndMoreThanTotalAmount(LocalDate date, BigDecimal amount) {
         if (date == null || amount == null) {
             throw new RuntimeException("Date and amount must be greater than 0");
         }
@@ -97,26 +91,66 @@ public class OrderService {
 
         List<Order> ordersByDateAndMoreThanTotalAmount = orderRepository
                 .findOrdersByDateAndMoreThanTotalAmount(localDate, amount);
-        List<OrderDetails> orderDetailsList = new ArrayList<>();
+
+        List<OrderDto> orderDtoList = new ArrayList<>();
 
         ordersByDateAndMoreThanTotalAmount.forEach(order -> {
-            orderDetailsList.addAll(orderDetailsRepository.findAllByOrderId(order.getId()));
+
+            List<OrderDetails> orderDetailsList = orderDetailsRepository.findAllByOrderId(order.getId());
+            List<OrderDetailsDto> orderDetailsDtoList = orderDetailsList.stream()
+                    .map(orderDetailsMapper::toOrderDetailsDto)
+                    .toList();
+
+            OrderDto orderDto = orderMapper.toTDtoWithDetails(order, orderDetailsDtoList);
+            orderDtoList.add(orderDto);
         });
 
-        List<OrderDetailsDto> orderDetailsDtoList = orderDetailsList.stream()
-                .map(orderDetailsMapper::toOrderDetailsDto)
-                .toList();
+        return orderDtoList;
+    }
 
-        return ordersByDateAndMoreThanTotalAmount.stream()
-                .map(el -> orderMapper.toTDtoWithDetails(el, orderDetailsDtoList))
-                .toList();
+    public List<OrderDto> getAllOrdersBetweenDatesAndExcludingProduct(String productName, LocalDate start, LocalDate end) {
+        if (start == null || end == null || productName == null) {
+            throw new RuntimeException("Date and amount must be greater than 0");
+        }
+
+        String startDate = String.valueOf(start);
+        String endDate = String.valueOf(end);
+
+        List<Order> ordersBetweenDatesAndExcludingProduct = orderRepository
+                .findOrdersBetweenDatesAndExcludingProduct(productName, startDate, endDate);
+
+        List<OrderDto> orderDtoList = new ArrayList<>();
+
+        ordersBetweenDatesAndExcludingProduct.forEach(order -> {
+
+            List<OrderDetails> orderDetails = orderDetailsRepository
+                    .findAllProductsExcludingProductName(productName, order.getId());
+
+            List<OrderDetailsDto> orderDetailsDtoList = orderDetails.stream()
+                    .map(orderDetailsMapper::toOrderDetailsDto)
+                    .toList();
+
+            OrderDto orderDto = orderMapper.toTDtoWithDetails(order, orderDetailsDtoList);
+            orderDtoList.add(orderDto);
+        });
+
+        return orderDtoList;
     }
 
     public void deleteOrder(Long id) {
         if (id == null) {
             throw new RuntimeException("id is null");
         }
+        Order byId = orderRepository.findById(id);
+        if (byId == null) {
+            throw new RuntimeException("Order not found");
+        }
+        orderDetailsRepository.deleteAllByOrderId(id);
         orderRepository.deleteById(id);
+    }
+
+    public void updateOrder(OrderDtoForCreateOrder orderNumber) {
+
     }
 
     private static BigDecimal getReduce(OrderDtoForCreateOrder orderDtoForCreateOrder) {

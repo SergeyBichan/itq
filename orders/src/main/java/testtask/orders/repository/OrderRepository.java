@@ -52,6 +52,17 @@ public class OrderRepository {
         return jdbcTemplate.query(sql, new OrderRowMapper(), date, amount);
     }
 
+    public List<Order> findOrdersBetweenDatesAndExcludingProduct(String productName, String dateStart, String dateEnd) {
+        String sql = "SELECT o.*" +
+                     " FROM orders o" +
+                     " LEFT JOIN orderdetails od" +
+                     " ON o.id = od.order_id" +
+                     " AND od.product_name = ?" +
+                     " WHERE od.id IS NULL" +
+                     " AND o.order_date::date BETWEEN TO_DATE(?, 'YYYY-MM-DD') AND TO_DATE(?, 'YYYY-MM-DD')";
+        return jdbcTemplate.query(sql, new OrderRowMapper(), productName, dateStart, dateEnd);
+    }
+
     public List<Order> findAll() {
         String sql = "SELECT * FROM orders";
         return jdbcTemplate.query(sql, new OrderRowMapper());
