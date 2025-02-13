@@ -9,6 +9,7 @@ import testtask.orders.entity.OrderDetails;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class OrderDetailsRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public void save(OrderDetails orderDetails) {
-        String sql = "INSERT INTO orderdetails ("+
+        String sql = "INSERT INTO orderdetails (" +
                      "product_article, " +
                      "product_name, " +
                      "product_quantity, " +
@@ -46,6 +47,16 @@ public class OrderDetailsRepository {
     public void deleteById(Long id) {
         String sql = "DELETE FROM orderdetails WHERE id = ?";
         jdbcTemplate.update(sql, id);
+    }
+
+    public void deleteAllByOrderId(Long id) {
+        String sql = "DELETE FROM orderdetails WHERE order_id = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+    public List<OrderDetails> findAllProductsExcludingProductName(String productName, Long id) {
+        String sql = "SELECT * FROM orderdetails WHERE product_name <> ? AND order_id = ?";
+        return jdbcTemplate.query(sql, new OrderDetailsRowMapper(), productName, id);
     }
 
     private static class OrderDetailsRowMapper implements RowMapper<OrderDetails> {
