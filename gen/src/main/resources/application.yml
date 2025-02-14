@@ -1,0 +1,7 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: gen
+  datasource:
+    url: mongodb://localhost:27017/generated_numbers_db

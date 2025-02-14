@@ -1,0 +1,19 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: orders
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orders_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+      data-locations: classpath:db/data.sql
+service:
+  generate-number:
+    url: "http://localhost:8081/api/v1/numbers"
+    correct-date-format: "yyyyMMdd"
