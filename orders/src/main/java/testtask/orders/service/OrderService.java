@@ -2,6 +2,7 @@ package testtask.orders.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import testtask.orders.dto.OrderDetailsDto;
@@ -20,12 +21,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static testtask.orders.constants.Constants.URI_FOR_GENERATE_NUMBER;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
+
+    @Value("${service.generate-number.url}")
+    private String uriForGenerateNumber;
+    @Value("${service.generate-number.correct-date-format}")
+    private String correctDateFormat;
 
     private final OrderRepository orderRepository;
     private final OrderDetailsRepository orderDetailsRepository;
@@ -35,12 +40,12 @@ public class OrderService {
 
 
     public String createOrder(OrderDtoForCreateOrder orderDtoForCreateOrder) {
-        String generatedOrderNumber = restTemplate.getForObject(URI_FOR_GENERATE_NUMBER, String.class);
+        String generatedOrderNumber = restTemplate.getForObject(uriForGenerateNumber, String.class);
         if (generatedOrderNumber == null) {
             throw new RuntimeException("Generate order number failed");
         }
         String dateNow = generatedOrderNumber.substring(5);
-        LocalDate date = LocalDate.parse(dateNow, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        LocalDate date = LocalDate.parse(dateNow, DateTimeFormatter.ofPattern(correctDateFormat));
 
         Order order = Order.builder()
                 .orderNumber(generatedOrderNumber)
@@ -160,4 +165,6 @@ public class OrderService {
                                 .multiply(BigDecimal.valueOf(detail.getProductQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+
 }
