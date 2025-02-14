@@ -128,9 +128,7 @@ public class OrderServiceTest {
     public void getOrderById_OrderNotFound() {
         when(orderRepository.findById(1L)).thenReturn(null); //
 
-        assertThrows(RuntimeException.class, () -> {
-            orderService.getOrderById(1L);
-        });
+        assertThrows(RuntimeException.class, () -> orderService.getOrderById(1L));
     }
 
     @Test
