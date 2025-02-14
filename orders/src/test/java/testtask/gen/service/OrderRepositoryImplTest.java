@@ -77,15 +77,6 @@ class OrderRepositoryImplTest {
                 .deliveryMethod("Courier")
                 .build();
 
-        orderDetails = OrderDetails.builder()
-                .id(1L)
-                .productArticle(1L)
-                .productName("Product")
-                .productQuantity(5L)
-                .productPrice(1000L)
-                .orderId(order)
-                .build();
-
         orderDto = OrderDto.builder()
                 .id(1L)
                 .orderNumber("1111120250213")
