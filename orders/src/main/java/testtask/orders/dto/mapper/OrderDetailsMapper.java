@@ -3,6 +3,7 @@ package testtask.orders.dto.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import testtask.orders.dto.OrderDetailsDto;
+import testtask.orders.entity.Order;
 import testtask.orders.entity.OrderDetails;
 
 @Component
@@ -19,12 +20,13 @@ public class OrderDetailsMapper {
                 .build();
     }
 
-    public OrderDetails toOrderDetailsEntity(OrderDetailsDto orderDetailsDto) {
+    public OrderDetails toOrderDetailsEntity(OrderDetailsDto orderDetailsDto, Order order) {
         return orderDetailsDto == null ? new OrderDetails() : OrderDetails.builder()
                 .productArticle(orderDetailsDto.getProductArticle())
                 .productName(orderDetailsDto.getProductName())
                 .productQuantity(orderDetailsDto.getProductQuantity())
                 .productPrice(orderDetailsDto.getProductPrice())
+                .orderId(order)
                 .build();
     }
 }

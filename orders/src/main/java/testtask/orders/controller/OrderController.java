@@ -81,10 +81,8 @@ public class OrderController {
     @GetMapping("/by-date-and-totalamount")
     public ResponseEntity<List<OrderDto>> getOrdersByDateAndTotalAmount(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-            @RequestParam BigDecimal totalAmount
-    ) {
-        return new ResponseEntity<>(orderService.getOrdersByDateAndMoreThanTotalAmount(date, totalAmount),
-                HttpStatus.OK);
+            @RequestParam BigDecimal totalAmount) {
+        return new ResponseEntity<>(orderService.getOrdersByDateAndMoreThanTotalAmount(date, totalAmount), HttpStatus.OK);
     }
 
     @Operation(summary = "Get orders by Date and Excluding some products",
@@ -97,11 +95,9 @@ public class OrderController {
     public ResponseEntity<List<OrderDto>> getOrdersByDateExcludingProduct(
             @RequestParam String productName,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateStart,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateEnd
-    ) {
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dateEnd) {
         return new ResponseEntity<>(
-                orderService.getAllOrdersBetweenDatesAndExcludingProduct(productName, dateStart, dateEnd)
-                , HttpStatus.OK
+                orderService.getAllOrdersBetweenDatesAndExcludingProduct(productName, dateStart, dateEnd),HttpStatus.OK
         );
     }
 

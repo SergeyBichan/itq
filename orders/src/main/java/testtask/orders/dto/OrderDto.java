@@ -20,18 +20,25 @@ public class OrderDto {
     @JsonIgnore
     private Long id;
     private String orderNumber;
+
     @JsonProperty
     private BigDecimal totalOrderPrice;
+
     @JsonProperty
     private LocalDate orderDate;
+
     @JsonProperty(required = true)
     private String orderConsumer;
+
     @JsonProperty(required = true)
     private String deliveryAddress;
+
     @JsonProperty(required = true)
     private String paymentMethod;
+
     @JsonProperty(required = true)
     private String deliveryMethod;
+
     @JsonProperty(required = true)
     private List<OrderDetailsDto> orderDetails;
 

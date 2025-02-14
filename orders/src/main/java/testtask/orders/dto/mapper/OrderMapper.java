@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import testtask.orders.dto.OrderDetailsDto;
 import testtask.orders.dto.OrderDto;
-import testtask.orders.dto.OrderWithoutDetailsDto;
+import testtask.orders.dto.OrderDtoForCreateOrder;
 import testtask.orders.entity.Order;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -27,28 +29,16 @@ public class OrderMapper {
                 .build();
     }
 
-    public OrderWithoutDetailsDto toTDtoWithoutDetails(Order order) {
-        return order == null ? new OrderWithoutDetailsDto() : OrderWithoutDetailsDto.builder()
-                .id(order.getId())
-                .orderNumber(order.getOrderNumber())
-                .totalOrderPrice(order.getTotalAmount())
-                .orderDate(order.getOrderDate())
-                .orderConsumer(order.getOrderConsumer())
-                .deliveryAddress(order.getDeliveryAddress())
-                .paymentMethod(order.getPaymentMethod())
-                .deliveryMethod(order.getDeliveryMethod())
-                .build();
-    }
-
-    public Order toEntity(OrderDto orderDto) {
+    public Order toEntity(OrderDtoForCreateOrder orderDto, LocalDate localDate, String orderNumber, BigDecimal totalAmount) {
         return orderDto == null ? new Order() : Order.builder()
-                .orderNumber(orderDto.getOrderNumber())
-                .totalAmount(orderDto.getTotalOrderPrice())
-                .orderDate(orderDto.getOrderDate())
+                .orderNumber(orderNumber)
+                .totalAmount(totalAmount)
+                .orderDate(localDate)
                 .orderConsumer(orderDto.getOrderConsumer())
                 .deliveryAddress(orderDto.getDeliveryAddress())
                 .paymentMethod(orderDto.getPaymentMethod())
                 .deliveryMethod(orderDto.getDeliveryMethod())
                 .build();
     }
+
 }
