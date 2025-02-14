@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: postgres:latest
+    container_name: orders
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orders_db
+
+    volumes:
+      - postgres_data:/data/db
+
+volumes:
+  postgres_data:
