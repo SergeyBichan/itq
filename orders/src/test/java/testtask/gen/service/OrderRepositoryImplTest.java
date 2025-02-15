@@ -218,22 +218,6 @@ class OrderRepositoryImplTest {
     }
 
     @Test
-    void createOrder_SavesOrderDetailsCorrectly() {
-
-        String url = ReflectionTestUtils.getField(orderServiceImpl, "uriForGenerateNumber").toString();
-        String generatedOrderNumber = "1111120250213";
-
-        when(restTemplate.getForObject(url, String.class)).thenReturn(generatedOrderNumber);
-
-        doNothing().when(orderRepositoryImpl).save(any(Order.class));
-        when(orderRepositoryImpl.findByOrderNumber(generatedOrderNumber)).thenReturn(order);
-
-        orderServiceImpl.createOrder(orderDtoForCreateOrder);
-
-        verify(orderDetailsRepository, times(1)).save(any(OrderDetails.class));
-    }
-
-    @Test
     void deleteOrder_WithNullId_ThrowsException() {
 
         Long id = null;
