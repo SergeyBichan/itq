@@ -1,0 +1,146 @@
+openapi: 3.0.0
+info:
+  title: Order Management API
+  description: API for managing orders
+  version: 1.0.0
+tags:
+  - name: Order Management
+    description: API for managing orders
+paths:
+  /api/v1/orders/all:
+    get:
+      summary: Get all orders
+      description: Returns a list of all orders
+      tags:
+        - Order Management
+      responses:
+        '200':
+          description: Successfully retrieved list
+        '404':
+          description: The resource you were trying to reach is not found
+  /api/v1/orders/{id}:
+    get:
+      summary: Get order by id
+      description: Returns order by id
+      tags:
+        - Order Management
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successfully retrieved order
+        '404':
+          description: The resource you were trying to reach is not found
+    delete:
+      summary: Delete order by id
+      description: Delete order
+      tags:
+        - Order Management
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successfully done
+        '404':
+          description: The resource you were trying to reach is not found
+  /api/v1/orders/create:
+    post:
+      summary: Create order
+      description: Create order
+      tags:
+        - Order Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDtoForCreateOrder'
+      responses:
+        '200':
+          description: Successfully order created
+        '404':
+          description: Not found
+  /api/v1/orders/by-date-and-totalamount:
+    get:
+      summary: Get orders by Date and Total amount
+      description: Returns list of orders by parameters
+      tags:
+        - Order Management
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: totalAmount
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: Successfully done
+        '404':
+          description: The resource you were trying to reach is not found
+  /api/v1/orders/by-date-excluding-product:
+    get:
+      summary: Get orders by Date and Excluding some products
+      description: Returns list of orders by parameters
+      tags:
+        - Order Management
+      parameters:
+        - name: productName
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: dateStart
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: dateEnd
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Successfully done
+        '404':
+          description: The resource you were trying to reach is not found
+components:
+  schemas:
+    OrderDtoForCreateOrder:
+      type: object
+      properties:
+      # Define properties for OrderDtoForCreateOrder
+      # Example:
+      # orderId:
+      #   type: integer
+      #   format: int64
+      # customerName:
+      #   type: string
+      # totalAmount:
+      #   type: number
+      #   format: double
+      required:
+      # List required properties
+      # Example:
+      # - orderId
+      # - customerName
+      # - totalAmount
