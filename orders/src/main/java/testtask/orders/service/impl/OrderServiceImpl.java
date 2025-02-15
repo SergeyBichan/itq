@@ -15,6 +15,7 @@ import testtask.orders.dto.mapper.OrderMapper;
 import testtask.orders.entity.Order;
 import testtask.orders.entity.OrderDetails;
 import testtask.orders.repository.OrderDetailsRepository;
+import testtask.orders.repository.OrderRepository;
 import testtask.orders.repository.impl.OrderRepositoryImpl;
 import testtask.orders.service.OrderService;
 
@@ -40,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
     @Value("${service.generate-number.correct-date-format}")
     private String correctDateFormat;
 
-    private final OrderRepositoryImpl orderRepositoryImpl;
+    private final OrderRepository orderRepository;
 
     private final OrderDetailsRepository orderDetailsRepository;
 
@@ -61,13 +62,13 @@ public class OrderServiceImpl implements OrderService {
                         calculateTotalAmountForOrder(orderDtoForCreateOrder));
 
         try {
-            orderRepositoryImpl.save(order);
+            orderRepository.save(order);
         } catch (Exception e) {
             log.error("cannot save order {}", orderDtoForCreateOrder);
             throw new RuntimeException("cannot save order", e.getCause());
         }
 
-        Order byOrderNumberFromDb = orderRepositoryImpl
+        Order byOrderNumberFromDb = orderRepository
                 .findByOrderNumber(generatedOrderNumber);
         if (byOrderNumberFromDb == null) {
             log.error("order number {} not found", generatedOrderNumber);
@@ -86,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto getOrderById(Long id) {
         Order orderFromDb = null;
         try {
-            orderFromDb = orderRepositoryImpl.findById(id);
+            orderFromDb = orderRepository.findById(id);
         } catch (EmptyResultDataAccessException e) {
             log.error("order with id {} not found", id);
             throw new RuntimeException("order not found");
@@ -104,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public List<Order> getAllOrders() {
-        return orderRepositoryImpl.findAll();
+        return orderRepository.findAll();
     }
 
     public List<OrderDto> getOrdersByDateAndMoreThanTotalAmount(LocalDate date, BigDecimal amount) {
@@ -113,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
         }
         String localDate = getStringFromFormattedDate(date);
 
-        List<Order> ordersByDateAndMoreThanTotalAmount = orderRepositoryImpl
+        List<Order> ordersByDateAndMoreThanTotalAmount = orderRepository
                 .findOrdersByDateAndMoreThanTotalAmount(localDate, amount);
 
         List<OrderDto> orderDtoList = new ArrayList<>();
@@ -138,7 +139,7 @@ public class OrderServiceImpl implements OrderService {
         String startDate = getStringFromFormattedDate(start);
         String endDate = getStringFromFormattedDate(end);
 
-        List<Order> ordersBetweenDatesAndExcludingProduct = orderRepositoryImpl
+        List<Order> ordersBetweenDatesAndExcludingProduct = orderRepository
                 .findOrdersBetweenDatesAndExcludingProduct(productName, startDate, endDate);
         if (ordersBetweenDatesAndExcludingProduct.isEmpty()) {
             log.error("No orders between {} and {} found", productName, startDate);
@@ -168,7 +169,7 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("id is null");
         }
 
-        Order byId = orderRepositoryImpl.findById(id);
+        Order byId = orderRepository.findById(id);
         if (byId == null) {
             log.error("Order with id {} not found", id);
             throw new RuntimeException("Order not found");
@@ -182,7 +183,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         try {
-            orderRepositoryImpl.deleteById(id);
+            orderRepository.deleteById(id);
         } catch (Exception e) {
             log.error("Error while deleting", e.getMessage());
             throw new RuntimeException("Order not found");
