@@ -1,5 +1,6 @@
 package testtask.orders.repository;
 
+import testtask.orders.dto.OrderDtoWithoutDetails;
 import testtask.orders.entity.Order;
 
 import java.math.BigDecimal;

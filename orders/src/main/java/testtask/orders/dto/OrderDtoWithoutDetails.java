@@ -6,14 +6,13 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 @Builder
-public class OrderDto {
+public class OrderDtoWithoutDetails {
 
     @JsonIgnore
     private Long id;
@@ -36,8 +35,4 @@ public class OrderDto {
 
     @JsonProperty(required = true)
     private String deliveryMethod;
-
-    @JsonProperty(required = true)
-    private List<OrderDetailsDto> orderDetails;
-
 }
