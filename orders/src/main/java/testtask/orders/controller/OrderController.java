@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import testtask.orders.dto.OrderDto;
 import testtask.orders.dto.OrderDtoForCreateOrder;
+import testtask.orders.dto.OrderDtoWithoutDetails;
 import testtask.orders.entity.Order;
 import testtask.orders.service.OrderService;
 
@@ -39,7 +40,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list"),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found")
     })
-    public List<Order> getAllOrders() {
+    public List<OrderDtoWithoutDetails> getAllOrders() {
         return orderService.getAllOrders();
     }
 

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import testtask.orders.dto.OrderDetailsDto;
 import testtask.orders.dto.OrderDto;
 import testtask.orders.dto.OrderDtoForCreateOrder;
+import testtask.orders.dto.OrderDtoWithoutDetails;
 import testtask.orders.entity.Order;
 
 import java.math.BigDecimal;
@@ -41,4 +42,16 @@ public class OrderMapper {
                 .build();
     }
 
+    public OrderDtoWithoutDetails toDtoWithoutDetails(Order order) {
+        return order == null ? new OrderDtoWithoutDetails() : OrderDtoWithoutDetails.builder()
+                .id(order.getId())
+                .orderNumber(order.getOrderNumber())
+                .totalOrderPrice(order.getTotalAmount())
+                .orderDate(order.getOrderDate())
+                .orderConsumer(order.getOrderConsumer())
+                .deliveryAddress(order.getDeliveryAddress())
+                .paymentMethod(order.getPaymentMethod())
+                .deliveryMethod(order.getDeliveryMethod())
+                .build();
+    }
 }

@@ -2,7 +2,7 @@ package testtask.orders.service;
 
 import testtask.orders.dto.OrderDto;
 import testtask.orders.dto.OrderDtoForCreateOrder;
-import testtask.orders.entity.Order;
+import testtask.orders.dto.OrderDtoWithoutDetails;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,6 +20,6 @@ public interface OrderService {
 
     List<OrderDto> getOrdersByDateAndMoreThanTotalAmount(LocalDate date, BigDecimal totalAmount);
 
-    List<Order> getAllOrders();
+    List<OrderDtoWithoutDetails> getAllOrders();
 
 }
