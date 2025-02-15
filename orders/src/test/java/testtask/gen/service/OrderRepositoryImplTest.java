@@ -19,7 +19,6 @@ import testtask.orders.entity.OrderDetails;
 import testtask.orders.repository.OrderRepository;
 import testtask.orders.repository.impl.OrderDetailsRepositoryImpl;
 import testtask.orders.repository.impl.OrderRepositoryImpl;
-import testtask.orders.service.OrderService;
 import testtask.orders.service.impl.OrderServiceImpl;
 
 import java.math.BigDecimal;
@@ -36,29 +35,23 @@ class OrderRepositoryImplTest {
     private OrderRepositoryImpl orderRepositoryImpl;
     @Mock
     private OrderRepository orderRepository;
-
     @Mock
     private OrderDetailsRepositoryImpl orderDetailsRepository;
-
     @Mock
     private RestTemplate restTemplate;
-
     @Mock
     private OrderMapper orderMapper;
-
     @Mock
     private OrderDetailsMapper orderDetailsMapper;
 
+
     @InjectMocks
     private OrderServiceImpl orderServiceImpl;
-    private OrderService orderService;
     private OrderDtoForCreateOrder orderDtoForCreateOrder;
     private Order order;
     private OrderDto orderDto;
     private OrderDetails orderDetails;
     private OrderDetailsDto orderDetailsDto;
-
-
 
     @BeforeEach
     void setUp() {
@@ -82,7 +75,7 @@ class OrderRepositoryImplTest {
                 .id(1L)
                 .orderNumber("1111120250213")
                 .totalAmount(BigDecimal.valueOf(5000.00))
-                .orderDate(LocalDate.now())
+                .orderDate(LocalDate.of(2023, 10, 1))
                 .orderConsumer("Consumer")
                 .deliveryAddress("Address")
                 .paymentMethod("Cash")
@@ -93,7 +86,7 @@ class OrderRepositoryImplTest {
                 .id(1L)
                 .orderNumber("1111120250213")
                 .totalOrderPrice(BigDecimal.valueOf(5000L))
-                .orderDate(LocalDate.now())
+                .orderDate(LocalDate.of(2023, 10, 1))
                 .orderConsumer("Consumer")
                 .deliveryAddress("Adress")
                 .paymentMethod("cash")
@@ -140,7 +133,7 @@ class OrderRepositoryImplTest {
         lenient().when(orderRepositoryImpl.findById(1L)).thenReturn(null);
         assertThrows(ResourceNotFoundException.class, () -> orderServiceImpl.getOrderById(1L));
     }
-
+    
     @Test
     void createOrder_Success() {
         String url = ReflectionTestUtils.getField(orderServiceImpl, "uriForGenerateNumber").toString();
