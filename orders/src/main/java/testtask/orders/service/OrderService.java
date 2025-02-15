@@ -3,7 +3,6 @@ package testtask.orders.service;
 import testtask.orders.dto.OrderDto;
 import testtask.orders.dto.OrderDtoForCreateOrder;
 import testtask.orders.dto.OrderDtoWithoutDetails;
-import testtask.orders.entity.Order;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

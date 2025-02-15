@@ -4,7 +4,6 @@ import exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -18,13 +17,11 @@ import testtask.orders.entity.Order;
 import testtask.orders.entity.OrderDetails;
 import testtask.orders.repository.OrderDetailsRepository;
 import testtask.orders.repository.OrderRepository;
-import testtask.orders.repository.impl.OrderRepositoryImpl;
 import testtask.orders.service.OrderService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,23 +114,17 @@ public class OrderServiceImpl implements OrderService {
         }
         String localDate = getStringFromFormattedDate(date);
 
-        List<Order> ordersByDateAndMoreThanTotalAmount = Optional.ofNullable(orderRepository
-                .findOrdersByDateAndMoreThanTotalAmount(localDate, amount)).orElseThrow(
-                        () -> new ResourceNotFoundException(ORDER_NOT_FOUND)
-        );
-
-        List<OrderDto> orderDtoList = new ArrayList<>();
-
-        ordersByDateAndMoreThanTotalAmount.forEach(order -> {
-            List<OrderDetails> orderDetailsList = orderDetailsRepository.findAllByOrderId(order.getId());
-            List<OrderDetailsDto> orderDetailsDtoList = orderDetailsList.stream()
-                    .map(orderDetailsMapper::toOrderDetailsDto)
-                    .toList();
-            OrderDto orderDto = orderMapper.toTDtoWithDetails(order, orderDetailsDtoList);
-            orderDtoList.add(orderDto);
-        });
-
-        return orderDtoList;
+        return Optional.ofNullable(orderRepository.findOrdersByDateAndMoreThanTotalAmount(localDate, amount))
+                .orElseThrow(() -> new ResourceNotFoundException(ORDER_NOT_FOUND))
+                .stream()
+                .map(order -> {
+                    List<OrderDetailsDto> orderDetailsDtoList = orderDetailsRepository.findAllByOrderId(order.getId())
+                            .stream()
+                            .map(orderDetailsMapper::toOrderDetailsDto)
+                            .toList();
+                    return orderMapper.toTDtoWithDetails(order, orderDetailsDtoList);
+                })
+                .toList();
     }
 
     public List<OrderDto> getAllOrdersBetweenDatesAndExcludingProduct(String productName, LocalDate start, LocalDate end) {
@@ -144,27 +135,18 @@ public class OrderServiceImpl implements OrderService {
         String startDate = getStringFromFormattedDate(start);
         String endDate = getStringFromFormattedDate(end);
 
-        List<Order> ordersBetweenDatesAndExcludingProduct = orderRepository
-                .findOrdersBetweenDatesAndExcludingProduct(productName, startDate, endDate);
-        if (ordersBetweenDatesAndExcludingProduct.isEmpty()) {
-            log.error("No orders between {} and {} found", productName, startDate);
-            throw new RuntimeException("No orders between date and product " + productName);
-        }
-
-        List<OrderDto> orderDtoList = new ArrayList<>();
-
-        ordersBetweenDatesAndExcludingProduct.forEach(order -> {
-            List<OrderDetails> orderDetails = orderDetailsRepository
-                    .findAllProductsExcludingProductName(productName, order.getId());
-            List<OrderDetailsDto> orderDetailsDtoList = orderDetails
-                    .stream()
-                    .map(orderDetailsMapper::toOrderDetailsDto)
-                    .toList();
-            OrderDto orderDto = orderMapper.toTDtoWithDetails(order, orderDetailsDtoList);
-            orderDtoList.add(orderDto);
-        });
-
-        return orderDtoList;
+        return Optional.ofNullable(orderRepository.findOrdersBetweenDatesAndExcludingProduct(productName, startDate, endDate))
+                .orElseThrow(() -> new ResourceNotFoundException(ORDER_NOT_FOUND))
+                .stream()
+                .map(order -> {
+                    List<OrderDetailsDto> orderDetailsDtoList = orderDetailsRepository
+                            .findAllProductsExcludingProductName(productName, order.getId())
+                            .stream()
+                            .map(orderDetailsMapper::toOrderDetailsDto)
+                            .toList();
+                    return orderMapper.toTDtoWithDetails(order, orderDetailsDtoList);
+                })
+                .toList();
     }
 
     @Transactional
