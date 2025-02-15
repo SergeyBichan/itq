@@ -229,12 +229,13 @@ class OrderRepositoryImplTest {
 
     @Test
     void deleteOrder_WithNonExistingOrder_ThrowsException() {
-        Long id = 1L;
-        when(orderRepositoryImpl.findById(id)).thenReturn(null);
+        Long orderId = 1L;
 
-        assertThrows(RuntimeException.class, () -> orderServiceImpl.deleteOrder(id));
-        assertEquals("Order not found", assertThrows(RuntimeException.class,
-                () -> orderServiceImpl.deleteOrder(id)).getMessage());
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            orderServiceImpl.deleteOrder(orderId);
+        });
+
+        assertEquals("Order not found", exception.getMessage());
     }
 
     @Test

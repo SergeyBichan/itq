@@ -1,6 +1,7 @@
 package testtask.orders.service.impl;
 
 import exception.ResourceNotFoundException;
+import exception.ResourceSaveFailed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static constants.GlobalConstatnt.ORDER_NOT_FOUND;
+import static constants.GlobalConstatnt.ORDER_SAVE_FAILED;
 import static testtask.orders.service.util.UtilMethods.calculateTotalAmountForOrder;
 import static testtask.orders.service.util.UtilMethods.getStringFromFormattedDate;
 
@@ -65,20 +67,21 @@ public class OrderServiceImpl implements OrderService {
         try {
             orderRepository.save(order);
         } catch (Exception e) {
-            log.error("cannot save order {}", orderDtoForCreateOrder);
-            throw new RuntimeException("cannot save order", e.getCause());
+            throw new ResourceSaveFailed(ORDER_SAVE_FAILED);
         }
 
-        Order byOrderNumberFromDb = orderRepository
-                .findByOrderNumber(generatedOrderNumber);
-        if (byOrderNumberFromDb == null) {
-            log.error("order number {} not found", generatedOrderNumber);
-            throw new RuntimeException("Order number not found");
-        }
+        Order byOrderNumberFromDb = Optional.ofNullable(orderRepository
+                .findByOrderNumber(generatedOrderNumber)).orElseThrow(
+                        () -> new ResourceNotFoundException(ORDER_NOT_FOUND)
+        );
 
         orderDtoForCreateOrder.getOrderDetails().forEach(od -> {
             OrderDetails orderDetails = orderDetailsMapper.toOrderDetailsEntity(od, byOrderNumberFromDb);
-            orderDetailsRepository.save(orderDetails);
+            try {
+                orderDetailsRepository.save(orderDetails);
+            } catch (Exception e) {
+                throw new ResourceSaveFailed(ORDER_SAVE_FAILED);
+            }
         });
 
         return "Order " + generatedOrderNumber + " created successfully";
