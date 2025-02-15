@@ -1,6 +1,7 @@
 package testtask.gen.service;
 
 import exception.ResourceNotFoundException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -107,6 +108,12 @@ class OrderRepositoryImplTest {
                 "http://localhost:8081/api/v1/numbers");
         ReflectionTestUtils.setField(orderServiceImpl, "correctDateFormat", "yyyyMMdd");
     }
+    @AfterEach
+    void tearDown() {
+        reset(restTemplate, orderMapper, orderRepository, orderDetailsRepository);
+    }
+
+
 
     @Test
     void getOrderById_Success() {
@@ -136,6 +143,30 @@ class OrderRepositoryImplTest {
     
     @Test
     void createOrder_Success() {
+//        String url = ReflectionTestUtils.getField(orderServiceImpl, "uriForGenerateNumber").toString();
+//        String generatedOrderNumber = "1111120250213";
+//        LocalDate date = LocalDate.parse("20250213", DateTimeFormatter.ofPattern("yyyyMMdd"));
+//
+//        when(restTemplate.getForObject(url, String.class))
+//                .thenReturn(generatedOrderNumber);
+//        when(orderMapper.toEntity(any(OrderDtoForCreateOrder.class), eq(date), eq(generatedOrderNumber), any(BigDecimal.class)))
+//                .thenReturn(order);
+//        doNothing().when(orderRepository).save(any(Order.class));
+//        when(orderRepository.findByOrderNumber(any(String.class))).thenReturn(order);
+//        when(orderDetailsMapper.toOrderDetailsEntity(any(OrderDetailsDto.class), any(Order.class)))
+//                .thenReturn(orderDetails);
+//        doNothing().when(orderDetailsRepository).save(any(OrderDetails.class));
+//
+//        String result = orderServiceImpl.createOrder(orderDtoForCreateOrder);
+//
+//        assertNotNull(result);
+//        assertEquals("Order 1111120250213 created successfully", result);
+//
+//        verify(restTemplate, times(1)).getForObject(url, String.class);
+//        verify(orderMapper, times(1)).toEntity(any(OrderDtoForCreateOrder.class), eq(date), eq(generatedOrderNumber), any(BigDecimal.class));
+//        verify(orderRepository, times(1)).save(any(Order.class));
+//        verify(orderRepository, times(1)).findByOrderNumber(generatedOrderNumber);
+//        verify(orderDetailsRepository, times(1)).save(any(OrderDetails.class));
         String url = ReflectionTestUtils.getField(orderServiceImpl, "uriForGenerateNumber").toString();
         String generatedOrderNumber = "1111120250213";
         LocalDate date = LocalDate.parse("20250213", DateTimeFormatter.ofPattern("yyyyMMdd"));
