@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import testtask.orders.dto.OrderDto;
 import testtask.orders.dto.OrderDtoForCreateOrder;
 import testtask.orders.dto.OrderDtoWithoutDetails;
-import testtask.orders.entity.Order;
 import testtask.orders.service.OrderService;
 
 import java.math.BigDecimal;
