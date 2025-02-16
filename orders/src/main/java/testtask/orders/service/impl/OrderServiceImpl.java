@@ -1,5 +1,6 @@
 package testtask.orders.service.impl;
 
+import exception.OrderNumberNotRecievedException;
 import exception.ResourceNotFoundException;
 import exception.ResourceSaveFailed;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-import static constants.GlobalConstatnt.ORDER_NOT_FOUND;
-import static constants.GlobalConstatnt.ORDER_SAVE_FAILED;
+import static constants.GlobalConstatnt.*;
 import static testtask.orders.service.util.UtilMethods.calculateTotalAmountForOrder;
 import static testtask.orders.service.util.UtilMethods.getStringFromFormattedDate;
 
@@ -53,10 +54,11 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public String createOrder(OrderDtoForCreateOrder orderDtoForCreateOrder) {
-        String generatedOrderNumber = restTemplate.getForObject(uriForGenerateNumber, String.class);
-        if (generatedOrderNumber == null) {
-            throw new RuntimeException("Generate order number failed");
-        }
+        String generatedOrderNumber = Optional.ofNullable(restTemplate.getForObject(uriForGenerateNumber, String.class))
+                .orElseThrow(
+                () -> new OrderNumberNotRecievedException(ORDER_NUMBER_NOT_RECIEVED)
+        );
+
         String dateNow = generatedOrderNumber.substring(5);
         LocalDate date = LocalDate.parse(dateNow, DateTimeFormatter.ofPattern(correctDateFormat));
 
@@ -112,9 +114,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public List<OrderDto> getOrdersByDateAndMoreThanTotalAmount(LocalDate date, BigDecimal amount) {
-        if (date == null || amount == null) {
-            throw new RuntimeException("Date and amount must be greater than 0");
-        }
+
+        Objects.requireNonNull(date, "date must not be null");
+        Objects.requireNonNull(amount, "amount must not be null");
+
         String localDate = getStringFromFormattedDate(date);
 
         return Optional.ofNullable(orderRepository.findOrdersByDateAndMoreThanTotalAmount(localDate, amount))
