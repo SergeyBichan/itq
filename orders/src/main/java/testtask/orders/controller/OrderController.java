@@ -73,7 +73,7 @@ public class OrderController {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found")
     })
     @DeleteMapping("/{id}")
-    public void deleteOrder(@PathVariable Long id) {
+    public void deleteOrder(@PathVariable @Positive(message = "id должен быть больше 0") Long id) {
         orderService.deleteOrder(id);
     }
 

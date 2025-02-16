@@ -165,22 +165,33 @@ components:
     OrderDetailsDto:
       type: object
       properties:
-        productId:
+        id:
           type: integer
           format: int64
-          description: ID товара
+          description: Уникальный идентификатор детали заказа
           example: 1
-        quantity:
+        productArticle:
+          type: integer
+          format: int64
+          description: Артикул товара
+          example: 123456
+        productName:
+          type: string
+          description: Название товара
+          example: "Смартфон"
+        productQuantity:
           type: integer
           format: int32
           description: Количество товара
           example: 2
-        price:
+        productPrice:
           type: number
           format: double
           description: Цена товара
           example: 100.50
       required:
-        - productId
-        - quantity
-        - price
+        - id
+        - productArticle
+        - productName
+        - productQuantity
+        - productPrice
