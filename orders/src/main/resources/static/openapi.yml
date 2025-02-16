@@ -3,11 +3,14 @@ info:
   title: Order Management API
   description: API for managing orders
   version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1/orders
+    description: Local server
 tags:
   - name: Order Management
     description: API for managing orders
 paths:
-  /api/v1/orders/all:
+  /all:
     get:
       summary: Get all orders
       description: Returns a list of all orders
@@ -18,7 +21,7 @@ paths:
           description: Successfully retrieved list
         '404':
           description: The resource you were trying to reach is not found
-  /api/v1/orders/{id}:
+  /{id}:
     get:
       summary: Get order by id
       description: Returns order by id
@@ -53,7 +56,7 @@ paths:
           description: Successfully done
         '404':
           description: The resource you were trying to reach is not found
-  /api/v1/orders/create:
+  /create:
     post:
       summary: Create order
       description: Create order
@@ -70,7 +73,7 @@ paths:
           description: Successfully order created
         '404':
           description: Not found
-  /api/v1/orders/by-date-and-totalamount:
+  /by-date-and-totalamount:
     get:
       summary: Get orders by Date and Total amount
       description: Returns list of orders by parameters
@@ -83,6 +86,7 @@ paths:
           schema:
             type: string
             format: date
+            pattern: 'yyyy-MM-dd'
         - name: totalAmount
           in: query
           required: true
@@ -94,7 +98,7 @@ paths:
           description: Successfully done
         '404':
           description: The resource you were trying to reach is not found
-  /api/v1/orders/by-date-excluding-product:
+  /by-date-excluding-product:
     get:
       summary: Get orders by Date and Excluding some products
       description: Returns list of orders by parameters
@@ -112,12 +116,14 @@ paths:
           schema:
             type: string
             format: date
+            pattern: 'yyyy-MM-dd'
         - name: dateEnd
           in: query
           required: true
           schema:
             type: string
             format: date
+            pattern: 'yyyy-MM-dd'
       responses:
         '200':
           description: Successfully done
@@ -128,19 +134,53 @@ components:
     OrderDtoForCreateOrder:
       type: object
       properties:
-      # Define properties for OrderDtoForCreateOrder
-      # Example:
-      # orderId:
-      #   type: integer
-      #   format: int64
-      # customerName:
-      #   type: string
-      # totalAmount:
-      #   type: number
-      #   format: double
+        orderConsumer:
+          type: string
+          description: Покупатель
+          example: "Иван Иванов"
+        deliveryAddress:
+          type: string
+          description: Адрес доставки
+          example: "ул. Ленина, д. 10"
+        paymentMethod:
+          type: string
+          description: Метод оплаты
+          example: "Карта"
+        deliveryMethod:
+          type: string
+          description: Метод доставки
+          example: "Курьер"
+        orderDetails:
+          type: array
+          description: Детали заказа
+          items:
+            $ref: '#/components/schemas/OrderDetailsDto'
+          minItems: 1
       required:
-      # List required properties
-      # Example:
-      # - orderId
-      # - customerName
-      # - totalAmount
+        - orderConsumer
+        - deliveryAddress
+        - paymentMethod
+        - deliveryMethod
+        - orderDetails
+    OrderDetailsDto:
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: ID товара
+          example: 1
+        quantity:
+          type: integer
+          format: int32
+          description: Количество товара
+          example: 2
+        price:
+          type: number
+          format: double
+          description: Цена товара
+          example: 100.50
+      required:
+        - productId
+        - quantity
+        - price
