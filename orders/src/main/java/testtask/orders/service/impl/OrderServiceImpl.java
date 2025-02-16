@@ -91,6 +91,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto getOrderById(Long id) {
+        Objects.requireNonNull(id, "id must not be null");
+
         Order orderFromDb = Optional.ofNullable(orderRepository.findById(id)).orElseThrow(
                 () -> new ResourceNotFoundException(ORDER_NOT_FOUND));
 
@@ -134,14 +136,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public List<OrderDto> getAllOrdersBetweenDatesAndExcludingProduct(String productName, LocalDate start, LocalDate end) {
-        if (start == null || end == null || productName == null) {
-            log.error("Start {} date and end date {} and product name is null", start, end);
-            throw new RuntimeException("Date and amount must be greater than 0");
-        }
+        Objects.requireNonNull(productName, "productName must not be null");
+        Objects.requireNonNull(start, "start date must not be null");
+        Objects.requireNonNull(end, "end date must not be null");
+
         String startDate = getStringFromFormattedDate(start);
         String endDate = getStringFromFormattedDate(end);
 
-        return Optional.ofNullable(orderRepository.findOrdersBetweenDatesAndExcludingProduct(productName, startDate, endDate))
+        return Optional.ofNullable(orderRepository
+                        .findOrdersBetweenDatesAndExcludingProduct(productName, startDate, endDate))
                 .orElseThrow(() -> new ResourceNotFoundException(ORDER_NOT_FOUND))
                 .stream()
                 .map(order -> {
@@ -158,29 +161,14 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     @Override
     public void deleteOrder(Long id) {
-        if (id == null) {
-            throw new RuntimeException("id is null");
-        }
+        Objects.requireNonNull(id, "id must not be null");
 
-        Order byId = orderRepository.findById(id);
-        if (byId == null) {
-            log.error("Order with id {} not found", id);
-            throw new RuntimeException("Order not found");
-        }
+        Order byId = Optional.ofNullable(orderRepository.findById(id)).orElseThrow(
+                () -> new ResourceNotFoundException(ORDER_NOT_FOUND)
+        );
 
-        try {
-            orderDetailsRepository.deleteAllByOrderId(id);
-        } catch (Exception e) {
-            log.error("Error while saving", e.getMessage());
-            throw new RuntimeException("Order save failed");
-        }
-
-        try {
-            orderRepository.deleteById(id);
-        } catch (Exception e) {
-            log.error("Error while deleting", e.getMessage());
-            throw new RuntimeException("Order not found");
-        }
+        orderDetailsRepository.deleteAllByOrderId(byId.getId());
+        orderRepository.deleteById(byId.getId());
 
     }
 
