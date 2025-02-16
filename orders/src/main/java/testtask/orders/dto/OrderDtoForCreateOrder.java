@@ -2,6 +2,7 @@ package testtask.orders.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -25,9 +26,11 @@ public class OrderDtoForCreateOrder {
     private String deliveryAddress;
 
     @NotBlank(message = "Метод оплаты не может быть пустым")
+    @Pattern(regexp = "card|cash", message = "Способ оплаты должен быть либо 'card', либо 'cash'")
     private String paymentMethod;
 
     @NotBlank(message = "Метод доставки не может быть пустым")
+    @Pattern(regexp = "доставка|самовывоз", message = "Метод доставки должен быть либо 'доставка', либо 'самовывоз'")
     private String deliveryMethod;
 
     @NotNull(message = "Детали заказа не могут быть null")
