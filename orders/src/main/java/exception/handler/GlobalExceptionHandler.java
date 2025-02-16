@@ -1,6 +1,7 @@
 package exception.handler;
 
 import exception.AppError;
+import exception.OrderNumberNotRecievedException;
 import exception.ResourceNotFoundException;
 import exception.ResourceSaveFailed;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientException;
 
 import java.time.LocalDateTime;
 
@@ -31,6 +33,13 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<AppError> catchRestClientGetOrderNumberException(OrderNumberNotRecievedException e) {
+        log.error(e.getMessage(), e);
 
-
+        return new ResponseEntity<>(new AppError(e.getMessage(), LocalDateTime.now()),
+                HttpStatus.BAD_REQUEST);
+    }
 }
+
+
